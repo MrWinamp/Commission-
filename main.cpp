@@ -28,20 +28,31 @@ enum ImageFormat
 class ProcessImage
 {
 public:
-    void process(QString inputFileName, QString outputFileName, ImageFormat format)
+    ProcessImage(ImageFormat format = ImageFormat::JPG): m_format(format){
+        switch (format) {
+        case JPG:
+            m_suffix = ".jpg";
+            break;
+        case PNG:
+            m_suffix = ".png";
+            break;
+        }
+    };
+
+    void process(QString inputFileName, QString outputFileName)
     {
-        QByteArray imageData = loadImage(inputFileName);
-        QImage image = imageFromData(imageData, format);
-        removeAlphaChannel(image, format);
+        QByteArray imageData = loadImage(inputFileName + m_suffix);
+        QImage image = imageFromData(imageData, m_format);
+        removeAlphaChannel(image, m_format);
         if(needRemoveAlfaChannel())
             image = processImage(image);
-        imageData = imageData(image, format);
-        saveImage(outputFileName);
+        imageData = imageData(image, m_format);
+        saveImage(outputFileName + m_suffix);
     }
 
 protected:
     QByteArray loadImage(QString &inputFileName);
-    QImage imageFromData();
+    QImage imageFromData(QByteArray &imageData, ImageFormat format);
     virtual QImage processImage(QImage &image) = 0;
     virtual void removeAlphaChannel(QImage &image, ImageFormat format) = 0;
     QByteArray imageData(QImage &image, ImageFormat format);
@@ -49,11 +60,15 @@ protected:
     bool needRemoveAlfaChannel(){
         return true;
     }
-
+private:
+    ImageFormat m_format;
+    QString m_suffix;
 };
 
 class ProcessJpgImage: public ProcessImage
 {
+public:
+    ProcessJpgImage(): ProcessImage(ImageFormat::JPG){}
 protected:
     bool needRemoveAlfaChannel()
     {
@@ -65,6 +80,8 @@ protected:
 
 class ProcessPngImage: public ProcessImage
 {
+public:
+    ProcessPngImage(): ProcessImage(ImageFormat::PNG){}
 protected:
     QImage processImage(QImage &image);
     void removeAlphaChannel(QImage &image, ImageFormat format);
