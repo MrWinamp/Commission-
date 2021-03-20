@@ -28,15 +28,15 @@ enum ImageFormat
 class ProcessImage
 {
 public:
-    void process(QString inputFileName, QString outputFileName)
+    void process(QString inputFileName, QString outputFileName, ImageFormat format)
     {
-        QByteArray imageData = loadImage(inputFileName + ".jpg");
-        QImage image = imageFromData(imageData, ImageFormat::JPG);
-        removeAlphaChannel(image, ImageFormat::PNG);
+        QByteArray imageData = loadImage(inputFileName);
+        QImage image = imageFromData(imageData, format);
+        removeAlphaChannel(image, format);
         if(needRemoveAlfaChannel())
             image = processImage(image);
-        imageData = imageData(image, ImageFormat::JPG);
-        saveImage(outputFileName + ".jpg");
+        imageData = imageData(image, format);
+        saveImage(outputFileName);
     }
 
 protected:
