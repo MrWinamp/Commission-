@@ -39,7 +39,7 @@ class ProcessImage
     }
 
 protected:
-    virtual QByteArray loadImage(QString &inputFileName);
+    virtual QByteArray loadImage(QString &inputFileName) = 0;
     virtual QImage imageFromData(QByteArray &imageData) = 0;
     virtual QImage processImage(QImage &image) = 0;
     virtual void removeAlphaChannel(QImage &image) = 0;
@@ -57,6 +57,7 @@ protected:
     {
         return false;
     }
+    QByteArray loadImage(QString &inputFileName);
     QImage imageFromData(QByteArray &imageData);
     QByteArray imageData(QImage &image);
     QImage processImage(QImage &image);
@@ -66,6 +67,7 @@ protected:
 class ProcessPngImage: public ProcessImage
 {
 protected:
+    QByteArray loadImage(QString &inputFileName);
     QImage imageFromData(QByteArray &imageData);
     QByteArray imageData(QImage &image);
     QImage processImage(QImage &image);
